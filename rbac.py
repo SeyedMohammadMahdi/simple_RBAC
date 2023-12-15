@@ -1,5 +1,5 @@
 # permissions [read, write, delete, create_user, delete_user, create_role]
-permission = ["read", "write", "delete", "create_user", "delete_user", "create_role", "assign_role", "delete_role"]
+permission = ["create", "read", "write", "delete", "create_user", "delete_user", "create_role", "assign_role", "delete_role"]
 
 class RBAC:
     def __init__(self):
@@ -31,7 +31,24 @@ class RBAC:
         self.users.pop(user_num)
 
     def delete_role(self, role_num):
+        role = self.roles[role_num]
         self.roles.pop(role_num)
+        for user in self.users:
+            if role in user.roles:
+                user.roles.remove(role)
+    def show_roles(self):
+        for role in rbac.roles:
+                print(role)
+
+    def add_object(self, name):
+        self.objects.append(Object(name))
+
+    def show_object(self):
+        for i, obj in enumerate(self.objects):
+            print(i, obj)
+
+    def delete_object(self, object_num):
+        self.objects.pop(object_num)
 
     def check_permission(self, permission):
 
@@ -61,9 +78,9 @@ class User:
 
 
 class Object:
-    def __init__(self, name, owner, content=""):
+    def __init__(self, name, content=""):
         self.name = name
-        self.owner = owner
+        # self.owner = owner
         self.content = content
 
     def write(self, new_content):
@@ -71,7 +88,9 @@ class Object:
 
     def read(self):
         print(self.content)
-
+    
+    def __str__(self):
+        return self.name
 
 
 class Role:
@@ -108,7 +127,12 @@ if __name__ == "__main__":
             print(4, "assign role")
             print(5, "delete user")
             print(6, "delete role")
-            print(9, "logout")
+            print(7, "add object")
+            print(8, "show objects")
+            print(9, "write object")
+            print(10, "read object")
+            print(11, "delete object")
+            print(12, "logout")
             print(10, "exit")            
 
             opt = input("choose option: ")
@@ -127,10 +151,20 @@ if __name__ == "__main__":
                 state = 7
             elif opt == "6":
                 state = 8
-            elif opt == "9":
+            elif opt == "7":
                 state = 9
+            elif opt == "8":
+                state = 10
+            elif opt == "9":
+                state = 11
+            elif opt == "10":
+                state = 12
+            elif opt == "11":
+                state = 13
+            elif opt == "12":
+                state = 14
             else:
-                state = exit
+                state = "exit"
             
 
         elif state == 2:
@@ -150,8 +184,7 @@ if __name__ == "__main__":
             state = 1
 
         elif state == 4:
-            for role in rbac.roles:
-                print(role)
+            rbac.show_roles()
             
             print()
             state = 1
@@ -219,7 +252,54 @@ if __name__ == "__main__":
                 print("permission denied")
             print()
             state = 1
+        
         elif state == 9:
+            if rbac.check_permission("create"):
+                name = input("eneter object name: ")
+                rbac.add_object(name)
+            state = 1
+        
+        elif state == 10:
+            rbac.show_object()
+            print()
+            state = 1
+        
+        elif state == 11:
+            if (rbac.check_permission("write")):
+                rbac.show_object()
+                print()
+                object_num = int(input("enter object num: "))
+                content = input("enter content: ")
+                rbac.objects[object_num].write(content)
+            else:
+                print("permission denied")
+            
+            print()
+            state = 1
+        
+        elif state == 12:
+            if (rbac.check_permission("read")):
+                rbac.show_object()
+                object_num = int(input("enter object num: "))
+                print(rbac.objects[object_num].content)
+            else:
+                print("permission denied")
+            print()
+            state = 1
+        
+        elif state == 13:
+            if rbac.check_permission("delete"):
+                rbac.show_object()
+                print()
+                object_num = int(input("enter object num: "))
+                rbac.delete_object(object_num)
+            else:
+                print("permission denied")
+            
+            print()
+            state = 1
+
+        elif state == 14:
             rbac.loggedin = None
             state = 0
 
