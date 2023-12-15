@@ -1,5 +1,5 @@
 # permissions [read, write, delete, create_user, delete_user, create_role]
-permission = ["read", "write", "delete", "create_user", "delete_user", "create_role", "assign_role"]
+permission = ["read", "write", "delete", "create_user", "delete_user", "create_role", "assign_role", "delete_role"]
 
 class RBAC:
     def __init__(self):
@@ -26,6 +26,12 @@ class RBAC:
     def assign_role(self, user_num, roles):
         for role in roles:
             self.users[user_num].add_role(self.roles[role])
+
+    def delete_user(self, user_num):
+        self.users.pop(user_num)
+
+    def delete_role(self, role_num):
+        self.roles.pop(role_num)
 
     def check_permission(self, permission):
 
@@ -100,6 +106,8 @@ if __name__ == "__main__":
             print(2, "show roles")
             print(3, "add role")
             print(4, "assign role")
+            print(5, "delete user")
+            print(6, "delete role")
             print(9, "logout")
             print(10, "exit")            
 
@@ -115,6 +123,10 @@ if __name__ == "__main__":
                 state = 5
             elif opt == "4":
                 state = 6
+            elif opt == "5":
+                state = 7
+            elif opt == "6":
+                state = 8
             elif opt == "9":
                 state = 9
             else:
@@ -161,6 +173,8 @@ if __name__ == "__main__":
         elif state == 6:
             if rbac.check_permission("assign_role"):
                 for i, user in enumerate(rbac.users):
+                    if i == 0:
+                        continue
                     print(i, user.name)
                 print()
 
@@ -172,6 +186,35 @@ if __name__ == "__main__":
                 roles = [int(i) for i in roles]
                 # roles = [rbac.roles[i] for i in roles]
                 rbac.assign_role(user_num, roles)
+            else:
+                print("permission denied")
+            print()
+            state = 1
+        
+        elif state == 7:
+            if rbac.check_permission("delete_user"):
+                for i, user in enumerate(rbac.users):
+                    if i == 0:
+                        continue
+                    print(i, user.name)
+                print()
+
+                user_num = int(input("enter user numberr: "))
+                rbac.delete_user(user_num)
+            else:
+                print("permission denied")
+            print()
+            state = 1
+        elif state == 8:
+            if rbac.check_permission("delete_role"):
+                for i, role in enumerate(rbac.roles):
+                    if i == 0:
+                        continue
+                    print(i, role)
+                print()
+
+                role_num = int(input("eneter role num: "))
+                rbac.delete_role(role_num)
             else:
                 print("permission denied")
             print()
