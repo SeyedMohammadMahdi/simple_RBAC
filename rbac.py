@@ -3,6 +3,7 @@ class RBAC:
         self.users = []
         self.roles = []
         self.objects = []
+        self.loggedin = None
         self.add_user("admin", "admin")
 
     def add_user(self, name, password):
@@ -63,9 +64,46 @@ if __name__ == "__main__":
             for i in rbac.users:
                 if user_name == i.name and password == i.password:
                     state = 1
+                    rbac.loggedin = i
                     break
+
         elif state == 1:
             print(0, "add user")
             print(1, "show users")
+            print(9, "logout")
+            print(10, "exit")            
+
             opt = input("choose option: ")
 
+            if opt == "0":
+                state = 2
+            elif opt == "1":
+                state = 3
+            elif opt == "9":
+                state = 9
+            else:
+                state = exit
+            
+
+        elif state == 2:
+            if rbac.loggedin.name == "admin":
+                user_name = input("enter user name: ")
+                password = input("enter password: ")
+                rbac.add_user(user_name, password)
+                state = 1
+
+            else:
+                print("only admin can add user\n\n")
+                state = 1
+
+        elif state == 3:
+            rbac.show_users()
+            print("\n\n")
+            state = 1
+
+        elif state == 9:
+            rbac.loggedin = None
+            state = 0
+            
+        else:
+            break
