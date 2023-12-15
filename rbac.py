@@ -133,7 +133,7 @@ if __name__ == "__main__":
             print(10, "read object")
             print(11, "delete object")
             print(12, "logout")
-            print(10, "exit")            
+            print(13, "exit")            
 
             opt = input("choose option: ")
 
@@ -232,7 +232,7 @@ if __name__ == "__main__":
                     print(i, user.name)
                 print()
 
-                user_num = int(input("enter user numberr: "))
+                user_num = int(input("enter user number: "))
                 rbac.delete_user(user_num)
             else:
                 print("permission denied")
@@ -257,6 +257,9 @@ if __name__ == "__main__":
             if rbac.check_permission("create"):
                 name = input("eneter object name: ")
                 rbac.add_object(name)
+            else:
+                print("permission denied")
+            print()
             state = 1
         
         elif state == 10:
