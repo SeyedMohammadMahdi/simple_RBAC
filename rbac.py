@@ -1,3 +1,5 @@
+# permissions [read, write, delete, create_user, delete_user, create_role]
+
 class RBAC:
     def __init__(self):
         self.users = []
@@ -5,6 +7,9 @@ class RBAC:
         self.objects = []
         self.loggedin = None
         self.add_user("admin", "admin")
+        self.add_role("admin", ["read", "write", "delete", "create_user", "delete_user", "create_role"])
+        self.users[0].add_role(self.roles[0])
+        
 
     def add_user(self, name, password):
         self.users.append(User(name, password))
@@ -13,6 +18,16 @@ class RBAC:
         for i,j in enumerate(self.users):
             print(i, j)
 
+    def add_role(self, name, permissions):
+        self.roles.append(Role(name, permissions))
+
+    def check_permission(self, permission):
+
+        for i in self.loggedin.roles:
+            if permission in i.permissions:
+                return True
+        
+        return False
 
 
 class User:
@@ -21,8 +36,8 @@ class User:
         self.password = password
         self.roles = []
 
-    def add_role(self, roles):
-        self.roles = roles
+    def add_role(self, role):
+        self.roles.append(role)
 
     def __str__(self):
         return self.name
@@ -52,6 +67,8 @@ class Role:
         print(self.name)
         print(self.permissions)
         return ""
+
+
 
 if __name__ == "__main__":
     rbac = RBAC()
@@ -86,7 +103,7 @@ if __name__ == "__main__":
             
 
         elif state == 2:
-            if rbac.loggedin.name == "admin":
+            if rbac.check_permission("create_user"):
                 user_name = input("enter user name: ")
                 password = input("enter password: ")
                 rbac.add_user(user_name, password)
@@ -104,6 +121,6 @@ if __name__ == "__main__":
         elif state == 9:
             rbac.loggedin = None
             state = 0
-            
+
         else:
             break
