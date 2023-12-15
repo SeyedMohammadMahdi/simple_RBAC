@@ -1,4 +1,5 @@
 # permissions [read, write, delete, create_user, delete_user, create_role]
+permission = ["read", "write", "delete", "create_user", "delete_user", "create_role"]
 
 class RBAC:
     def __init__(self):
@@ -40,8 +41,12 @@ class User:
         self.roles.append(role)
 
     def __str__(self):
-        return self.name
-
+        string  = self.name + ": [ "
+        for role in self.roles:
+            string += role.name + ", "
+        string += " ]"
+        return string
+ 
 
 
 class Object:
@@ -64,9 +69,9 @@ class Role:
         self.permissions = permissions
 
     def __str__(self):
-        print(self.name)
-        print(self.permissions)
-        return ""
+        # print(self.name)
+        # print(self.permissions)
+        return self.name + ": [ " + ", ".join(self.permissions) + " ]"
 
 
 
@@ -87,6 +92,8 @@ if __name__ == "__main__":
         elif state == 1:
             print(0, "add user")
             print(1, "show users")
+            print(2, "show roles")
+            print(3, "add role")
             print(9, "logout")
             print(10, "exit")            
 
@@ -96,6 +103,10 @@ if __name__ == "__main__":
                 state = 2
             elif opt == "1":
                 state = 3
+            elif opt == "2":
+                state = 4
+            elif opt == "3":
+                state = 5
             elif opt == "9":
                 state = 9
             else:
@@ -110,12 +121,33 @@ if __name__ == "__main__":
                 state = 1
 
             else:
-                print("only admin can add user\n\n")
+                print("permission denied\n\n")
                 state = 1
 
         elif state == 3:
             rbac.show_users()
             print("\n\n")
+            state = 1
+
+        elif state == 4:
+            for role in rbac.roles:
+                print(role)
+            
+            print()
+            state = 1
+        elif state == 5:
+            if rbac.check_permission("create_role"):
+                name = input("eneter role name: ")
+                for i, j in enumerate(permission): 
+                    print(i, j)
+                print()
+                permissions = input("eneter permissions number: ").split(" ")
+                permissions = [int(i) for i in permissions]
+                permissions = [permission[i] for i in permissions]
+                rbac.add_role(name, permissions)
+                print()
+            else:
+                print("permission denied\n")
             state = 1
 
         elif state == 9:
